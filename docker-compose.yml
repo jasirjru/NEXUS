@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: nexus
+      POSTGRES_PASSWORD: nexus_dev_password   # dev only; override in real deployments
+      POSTGRES_DB: nexus
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nexus"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: infrastructure/Dockerfile.api
+    environment:
+      NEXUS_DATABASE_URL: postgresql+psycopg2://nexus:nexus_dev_password@db:5432/nexus
+      NEXUS_DATA_PROVIDER: demo
+      NEXUS_LLM_PROVIDER: echo
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "python -m nexus.cli init-db &&
+             python -m nexus.cli pipeline &&
+             python -m nexus.cli runserver --host 0.0.0.0 --port 8000"
+
+  web:
+    build:
+      context: .
+      dockerfile: infrastructure/Dockerfile.web
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
