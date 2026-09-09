@@ -23,6 +23,7 @@ export default function RootLayout({
             </div>
             <nav>
               {[
+                ["/audit", "Security Audit", "🔍"],
                 ["/", "Overview", "◉"],
                 ["/network", "Network Intelligence", "⬡"],
                 ["/anomalies", "Anomaly Detection", "△"],

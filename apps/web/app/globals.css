@@ -177,3 +177,97 @@ input[type="text"]:focus, select:focus { border-color: var(--accent); }
   font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
   color: var(--text-dim); margin-bottom: 6px; font-weight: 700;
 }
+
+/* --- Audit Search Engine Styles --- */
+.audit-hero {
+  background: radial-gradient(circle at 50% 0%, rgba(79, 156, 249, 0.12) 0%, var(--bg-2) 70%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px 28px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.audit-hero::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 15%; right: 15%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
+}
+
+.audit-input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--bg-3);
+  border: 1px solid rgba(79, 156, 249, 0.35);
+  border-radius: 12px;
+  padding: 6px 8px 6px 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), 0 0 16px rgba(79, 156, 249, 0.15);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.audit-input-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.45), 0 0 24px rgba(79, 156, 249, 0.3);
+}
+.audit-input {
+  flex: 1;
+  background: transparent !important;
+  border: none !important;
+  padding: 10px 12px !important;
+  font-size: 15px !important;
+  font-family: var(--mono);
+  color: var(--text) !important;
+  outline: none;
+}
+.audit-input::placeholder { color: var(--text-dim); opacity: 0.6; }
+
+.verdict-banner {
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.verdict-banner.safe {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.12), var(--bg-2));
+  border-color: rgba(52, 211, 153, 0.35);
+}
+.verdict-banner.elevated {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), var(--bg-2));
+  border-color: rgba(251, 191, 36, 0.35);
+}
+.verdict-banner.critical {
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.15), var(--bg-2));
+  border-color: rgba(248, 113, 113, 0.45);
+}
+
+.score-badge-lg {
+  font-size: 32px;
+  font-weight: 800;
+  font-family: var(--mono);
+  line-height: 1;
+}
+
+.preset-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  background: var(--bg-3);
+  color: var(--text);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.preset-chip:hover {
+  border-color: var(--accent);
+  background: rgba(79, 156, 249, 0.15);
+  transform: translateY(-1px);
+}
+
