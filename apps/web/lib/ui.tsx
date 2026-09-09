@@ -41,8 +41,12 @@ export function post(path: string, body?: unknown) {
     headers: { "Content-Type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
   }).then(async (r) => {
-    if (!r.ok) throw new Error(`${r.status}: ${await r.text()}`);
-    return r.json();
+    if (!r.ok) {
+      const text = await r.text();
+      throw new Error(`${r.status}: ${text || r.statusText}`);
+    }
+    const text = await r.text();
+    return text ? JSON.parse(text) : {};
   });
 }
 

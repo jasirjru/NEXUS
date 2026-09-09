@@ -39,12 +39,19 @@ export default function AnomaliesPage() {
                     <RiskBar value={r.value} />
                   </div>
                 </td>
-                <td className="mono dim">{(r.details.robust_zscore ?? 0).toFixed(2)}</td>
-                <td className="mono dim">{(r.details.iforest ?? 0).toFixed(2)}</td>
-                <td className="mono dim">{(r.details.lof ?? 0).toFixed(2)}</td>
-                <td className="mono dim">{(r.details.autoencoder ?? 0).toFixed(2)}</td>
+                <td className="mono dim">{(r.details?.robust_zscore ?? 0).toFixed(2)}</td>
+                <td className="mono dim">{(r.details?.iforest ?? 0).toFixed(2)}</td>
+                <td className="mono dim">{(r.details?.lof ?? 0).toFixed(2)}</td>
+                <td className="mono dim">{(r.details?.autoencoder ?? 0).toFixed(2)}</td>
               </tr>
             ))}
+            {!data?.items?.length && (
+              <tr>
+                <td colSpan={6} className="dim" style={{ textAlign: "center", padding: 24 }}>
+                  No active anomalies above threshold. Trigger intelligence loop to score latest events.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

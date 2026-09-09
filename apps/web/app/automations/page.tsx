@@ -20,6 +20,29 @@ export default function AutomationsPage() {
   const [entityId, setEntityId] = useState("");
   const [busy, setBusy] = useState(false);
 
+  const seedWorkflow = async () => {
+    setBusy(true);
+    try {
+      await post(`${API}/automations`, {
+        name: "High-Risk Threat Quarantine",
+        trigger_metric: "risk",
+        trigger_operator: ">",
+        trigger_threshold: 0.8,
+        steps: [
+          { action: "flag_entity" },
+          { action: "freeze_transfers" },
+          { action: "dispatch_incident_webhook" },
+        ],
+        requires_approval: true,
+      });
+      reloadAutos();
+    } catch {
+      // Ignored if already created
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const run = async (autoId: number) => {
     const eid = entityId || entities?.items?.[0]?.id;
     if (!eid) return;
@@ -72,8 +95,11 @@ export default function AutomationsPage() {
               ))}
               {!autos?.items.length && (
                 <tr>
-                  <td colSpan={4} className="dim">
-                    Seed one via <code>python -m nexus.cli automation seed</code>
+                  <td colSpan={4} style={{ padding: 20, textAlign: "center" }}>
+                    <div className="dim" style={{ marginBottom: 10 }}>No automated incident playbooks created yet.</div>
+                    <button type="button" className="btn" onClick={seedWorkflow} disabled={busy}>
+                      {busy ? "Seeding…" : "+ Create Standard Incident Playbook"}
+                    </button>
                   </td>
                 </tr>
               )}
