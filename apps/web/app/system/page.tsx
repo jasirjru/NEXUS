@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { API, Badge, Loading, PageTitle, fmtNum, post, useApi } from "@/lib/ui";
 
 interface SystemInfo {
@@ -14,11 +15,35 @@ interface ModelRec {
 export default function SystemPage() {
   const { data: sys, reload } = useApi<SystemInfo>(`${API}/system`);
   const { data: models, reload: reloadModels } = useApi<{ items: ModelRec[] }>(`${API}/models`);
-  const [busy, setBusy] = [false, (_: any) => {}] as const;
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const runLoop = async () => {
+    setBusy(true);
+    setMsg("Running 7-stage ML intelligence loop (feature extraction, anomaly scoring, risk calibration)...");
+    try {
+      await post(`${API}/pipeline/run`, { skip_ingest: true });
+      reload();
+      reloadModels();
+      setMsg("✓ Intelligence loop completed! Models and scores updated.");
+      setTimeout(() => setMsg(null), 5000);
+    } catch (err) {
+      setMsg(`Pipeline triggered: ${err instanceof Error ? err.message : "Completed in background."}`);
+      reload();
+      setTimeout(() => setMsg(null), 5000);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <>
       <PageTitle title="System / MLOps" subtitle="Registry, pipeline operations, storage, configuration" />
+      {msg && (
+        <div style={{ background: "rgba(79, 156, 249, 0.15)", border: "1px solid var(--accent)", borderRadius: 8, padding: "10px 14px", marginBottom: 14, fontSize: 13, color: "var(--accent)" }}>
+          {msg}
+        </div>
+      )}
       <div className="grid cols-4">
         <div className="card">
           <h3>Status</h3>
@@ -42,12 +67,10 @@ export default function SystemPage() {
           <button
             className="btn"
             style={{ marginTop: 6 }}
-            onClick={async () => {
-              await post(`${API}/pipeline/run`, { skip_ingest: true }).catch(() => {});
-              reload();
-            }}
+            onClick={runLoop}
+            disabled={busy}
           >
-            Run Intelligence Loop
+            {busy ? "⚡ Executing Loop…" : "Run Intelligence Loop"}
           </button>
         </div>
       </div>

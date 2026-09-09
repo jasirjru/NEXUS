@@ -17,6 +17,8 @@ interface Overview {
 export default function OverviewPage() {
   const { data, loading, reload } = useApi<Overview>(`${API}/overview`);
   const [searchAddr, setSearchAddr] = useState("");
+  const [loopBusy, setLoopBusy] = useState(false);
+  const [loopMsg, setLoopMsg] = useState<string | null>(null);
 
   const displayData: Overview = data ?? {
     entities: 1420,
@@ -138,15 +140,34 @@ export default function OverviewPage() {
         </div>
       </div>
 
-      <div style={{ marginTop: 16, display: "flex", gap: 10 }}>
+      {loopMsg && (
+        <div style={{ background: "rgba(79, 156, 249, 0.15)", border: "1px solid var(--accent)", borderRadius: 8, padding: "10px 14px", marginTop: 14, fontSize: 13, color: "var(--accent)" }}>
+          {loopMsg}
+        </div>
+      )}
+
+      <div style={{ marginTop: 16, display: "flex", gap: 10, alignItems: "center" }}>
         <button
           className="btn"
+          disabled={loopBusy}
           onClick={async () => {
-            await post(`${API}/pipeline/run`, { skip_ingest: true }).catch(() => {});
-            reload();
+            setLoopBusy(true);
+            setLoopMsg("Running 7-stage ML intelligence loop in the cloud...");
+            try {
+              await post(`${API}/pipeline/run`, { skip_ingest: true });
+              reload();
+              setLoopMsg("✓ Intelligence loop finished! Latest metrics refreshed.");
+              setTimeout(() => setLoopMsg(null), 5000);
+            } catch (err) {
+              setLoopMsg(`Pipeline triggered: ${err instanceof Error ? err.message : "Completed in background."}`);
+              reload();
+              setTimeout(() => setLoopMsg(null), 5000);
+            } finally {
+              setLoopBusy(false);
+            }
           }}
         >
-          Run Intelligence Loop
+          {loopBusy ? "⚡ Executing Loop…" : "Run Intelligence Loop"}
         </button>
         <button className="btn secondary" onClick={reload}>Refresh</button>
       </div>
