@@ -24,3 +24,6 @@ out/
 Thumbs.db
 .idea/
 .vscode/
+
+# Local server logs
+*.log
